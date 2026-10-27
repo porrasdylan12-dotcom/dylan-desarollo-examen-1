@@ -247,6 +247,8 @@ createServer(async (req, res) => {
     if (!coincide[2] && req.method === "DELETE") {
       if (equipo.estado === "prestado")
         return enviar(res, 409, { mensaje: "No se puede eliminar un equipo prestado.", codigo: "REGLA_NEGOCIO" });
+      if (equipo.estado === "mantenimiento")
+        return enviar(res, 409, { mensaje: "No se puede eliminar un equipo en mantenimiento.", codigo: "REGLA_NEGOCIO" });
       equipos.splice(equipos.indexOf(equipo), 1);
       return enviar(res, 204);
     }

@@ -117,9 +117,16 @@ h3 { font-size: 1rem; }
   color: var(--color-texto-suave);
 }
 
-.tarjeta .btn-eliminar {
+.acciones-equipo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-top: auto;
-  align-self: flex-start;
+}
+
+.btn-prestar {
+  color: var(--color-acento);
+  border-color: var(--color-primario);
 }
 
 .estado {

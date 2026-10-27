@@ -40,6 +40,10 @@ class EquipoService
             throw new ReglaNegocioException('No se puede eliminar un equipo prestado.');
         }
 
+        if ($equipo->estado === 'mantenimiento') {
+            throw new ReglaNegocioException('No se puede eliminar un equipo en mantenimiento.');
+        }
+
         $equipo->delete();
     }
 

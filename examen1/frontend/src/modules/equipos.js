@@ -14,3 +14,7 @@ export const crearEquipo = (datos) => {
 export const eliminarEquipo = (id) => {
   return request(`/equipos/${id}`, { method: "DELETE" });
 };
+
+export const prestarEquipo = (id) => {
+  return request(`/equipos/${id}/prestamo`, { method: "POST" });
+};

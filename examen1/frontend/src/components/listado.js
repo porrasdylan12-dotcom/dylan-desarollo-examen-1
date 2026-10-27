@@ -1,4 +1,4 @@
-import { listarEquipos, eliminarEquipo } from "../modules/equipos.js";
+import { listarEquipos, eliminarEquipo, prestarEquipo } from "../modules/equipos.js";
 import { mostrarMensaje } from "./mensajes.js";
 
 const POR_PAGINA = 6;
@@ -40,6 +40,10 @@ export const cargarPagina = async (pagina = 1) => {
         const $estado = fragmento.querySelector(".estado");
         $estado.textContent = equipo.estado;
         $estado.dataset.estado = equipo.estado;
+        const botonEliminar = fragmento.querySelector(".btn-eliminar");
+        botonEliminar.disabled = equipo.estado === "mantenimiento";
+        if (botonEliminar.disabled) botonEliminar.title = "No se puede eliminar un equipo en mantenimiento.";
+        fragmento.querySelector(".btn-prestar").hidden = equipo.estado !== "disponible";
         $lista.append(fragmento);
       }
     }
@@ -58,11 +62,29 @@ export const cargarPagina = async (pagina = 1) => {
 };
 
 const alHacerClicEnLista = async (evento) => {
-  const boton = evento.target.closest(".btn-eliminar");
+  const botonPrestar = evento.target.closest(".btn-prestar");
+  const botonEliminar = evento.target.closest(".btn-eliminar");
+  const boton = botonPrestar ?? botonEliminar;
   if (!boton || !$lista.contains(boton)) return;
 
   const tarjeta = boton.closest("[data-id]");
-  if (!tarjeta || !confirm("¿Desea eliminar este equipo?")) return;
+  if (!tarjeta) return;
+
+  if (botonPrestar) {
+    if (!confirm("¿Desea marcar este equipo como prestado?")) return;
+    try {
+      await prestarEquipo(tarjeta.dataset.id);
+      mostrarMensaje("exito", "Equipo marcado como prestado.");
+      await cargarPagina(paginaActual);
+    } catch (error) {
+      mostrarMensaje("error", error.status === 409
+        ? error.datos.mensaje
+        : "No fue posible prestar el equipo.");
+    }
+    return;
+  }
+
+  if (!confirm("¿Desea eliminar este equipo?")) return;
 
   try {
     await eliminarEquipo(tarjeta.dataset.id);
